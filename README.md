@@ -1,14 +1,14 @@
 # Open API SDK Generator Demo
 
+You know what’s better than giving your **front-end** colleagues hand-made Postman collections? :) The URL of your **back-end** Open API docs! Not only does it give them a way to try your API quickly, but it also allows them to generate Postman collections—or even better, client-side SDKs.
 
-You know what is better than giving you **front-end** colleagues a hand-made postman collections :) ? the URL of you **back-end** Open API docs. You will not only give them a way to try you API quickly, will give them away to use it to generate the postman collection. Or even better generating client-side SDKs.
+There are many libraries and CLI tools that take your Open API URL and generate DTO types and services you can use to call your back-end. Some even integrate with your favorite state management libraries.
 
-There are a lot of libraries/cli-tools that take your Open API URL and generate DTO types and Services you can use to call your back-end. Some of them integrate with you favorite state management libraries as well.
+In this post, I’ll show how you can create your own client with TanStack Query hooks. I’ll be using .NET for the back-end and ReactJS for the front-end.
 
-In this post, I'll show how can create your own client with tanstack query hooks. I'll be using .NET as the back-end and ReactJS as the front-end.
+---
 
-
-Since .NET 9 comes out of the box with Open API support, no need to do any thing about the back-end in in terms of installing libraries. Just generate a simple `webapi` project and add 2 controller endpoints (GET /products, POST /products)
+Since .NET 9 comes with Open API support out of the box, there’s no need to install extra libraries for the back-end. Just generate a simple `webapi` project and add two controller endpoints (`GET /products` and `POST /products`):
 
 ```cs
 [ApiController]
@@ -19,23 +19,24 @@ public class ProductsController : ControllerBase
 
     public static ConcurrentBag<Product> InitializeProducts()
     {
-        return
-        [
+        // Initialize some sample products
+        return new ConcurrentBag<Product>
+        {
             new Product()
             {
                 Id = Guid.CreateVersion7(),
                 Title = "Mobile Phone",
-                Price = 55 * 1000,
+                Price = 55_000,
                 Description = "Mobile Phone Description",
             },
             new Product()
             {
                 Id = Guid.CreateVersion7(),
                 Title = "Laptop",
-                Price = 120 * 1000,
+                Price = 120_000,
                 Description = "Laptop Description",
             },
-        ];
+        };
     }
 
     [HttpGet(Name = "GetProducts")] // You need to specify the name to be used in the OpenAPI spec as OperationId
@@ -51,18 +52,18 @@ public class ProductsController : ControllerBase
         return CreatedAtAction(nameof(GetProducts), product);
     }
 }
-```
+````
 
+---
 
-for ReactJS. we need to install hey-api, axios, tanstack-query
+For ReactJS, install `hey-api`, `axios`, and `@tanstack/react-query`:
 
 ```bash
 pnpm add @hey-api/openapi-ts -D -E
 pnpm add @tanstack/react-query axios
 ```
 
-
-the hey-api library expects the config file `openapi-ts.config.ts`
+The `hey-api` library expects a config file `openapi-ts.config.ts`:
 
 ```ts
 import { defineConfig } from "@hey-api/openapi-ts";
@@ -72,18 +73,17 @@ export default defineConfig({
   output: "src/client", // put your output directory here
   plugins: ["@hey-api/client-axios", "@tanstack/react-query"],
 });
-
 ```
 
-Then execute the library's cli tool to generate you SDK
+Then run the CLI tool to generate your SDK:
 
 ```bash
 npx openapi-ts # will generate the SDK in src/client
 ```
 
-And now we can use it
+---
 
-1st think we need to do is to set the baseURL
+Next, set the `baseURL` for the client:
 
 ```ts
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -97,7 +97,7 @@ client.setConfig({
 });
 ```
 
-And here is the code for using axios and useEffect
+Here’s an example using Axios and `useEffect`:
 
 ```ts
 import { useEffect, useState } from "react";
@@ -115,7 +115,7 @@ const ProductsListViaClient = () => {
     const fetchProducts = async () => {
       try {
         setIsLoading(true);
-        // getProduct is the same as the Operation Id
+        // getProducts is the same as the OperationId
         const response = await getProducts();
         setProducts(response.data || []);
       } catch (err) {
@@ -129,12 +129,13 @@ const ProductsListViaClient = () => {
     fetchProducts();
   }, []);
 
-/* skipped for brevity */
+  /* skipped for brevity */
 };
-  
 ```
 
-For integrating with @tanstack/query, here is how to the post endpoint in a useMutation hook
+---
+
+To integrate with `@tanstack/react-query` for mutations:
 
 ```ts
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -151,7 +152,7 @@ const AdProductForm = () => {
     ...createProductMutation(),
     onSettled() {
       queryClient.invalidateQueries({
-        queryKey: getProductsQueryKey(), // if you we've used tanstack/query for getting the products this will actually update the cache
+        queryKey: getProductsQueryKey(), // if we've used tanstack/query for getting the products this will actually update the cache
       });
     },
   });
@@ -173,12 +174,14 @@ const AdProductForm = () => {
       },
     });
   };
- /* skipped for brevity */ 
-}
+
+  /* skipped for brevity */
+};
 ```
 
-That's not all if your back-end can generate Open API schema for your polymorphic types. the library can utilize that to generate discriminated TS union types 
+---
 
+If your back-end generates Open API schemas for polymorphic types, `hey-api` can generate discriminated TypeScript union types:
 
 ```cs
 using System.Text.Json.Serialization;
@@ -239,39 +242,31 @@ public class UsersController : ControllerBase
 }
 ```
 
-you will notice in OpenAPI docs the following:
+You’ll notice the following in the OpenAPI docs:
+
 ```json
 {
-    /* skipped for brevity */
-
-    "User": {
-        "required": [
-          "type"
-        ],
-        "type": "object",
-        "anyOf": [
-          {
-            "$ref": "#/components/schemas/UserStudent"
-          },
-          {
-            "$ref": "#/components/schemas/UserTeacher"
-          }
-        ],
-        "discriminator": {
-          "propertyName": "type",
-          "mapping": {
-            "student": "#/components/schemas/UserStudent",
-            "teacher": "#/components/schemas/UserTeacher"
-          }
-        }
-      },
-
-      /* skipped for brevity */
+  "User": {
+    "required": ["type"],
+    "type": "object",
+    "anyOf": [
+      { "$ref": "#/components/schemas/UserStudent" },
+      { "$ref": "#/components/schemas/UserTeacher" }
+    ],
+    "discriminator": {
+      "propertyName": "type",
+      "mapping": {
+        "student": "#/components/schemas/UserStudent",
+        "teacher": "#/components/schemas/UserTeacher"
+      }
+    }
+  }
 }
 ```
 
+---
 
-![[image-10.png]]
+Finally, using `useQuery` with the generated options:
 
 ```ts
 /* skipped for brevity */
