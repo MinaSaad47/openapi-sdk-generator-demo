@@ -1,5 +1,7 @@
 # Open API SDK Generator Demo
 
+![Demo Image](image.png)
+
 You know what’s better than giving your **front-end** colleagues hand-made Postman collections? :) The URL of your **back-end** Open API docs! Not only does it give them a way to try your API quickly, but it also allows them to generate Postman collections—or even better, client-side SDKs.
 
 There are many libraries and CLI tools that take your Open API URL and generate DTO types and services you can use to call your back-end. Some even integrate with your favorite state management libraries.
