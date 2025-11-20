@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "k0GVDLDkPBoP2Bj+fasV9/rA50IpSu++fHQ81wwyM40=",
+  "Source": "OpenAPISDKGenerators.Backend",
+  "BasePath": "_content/OpenAPISDKGenerators.Backend",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

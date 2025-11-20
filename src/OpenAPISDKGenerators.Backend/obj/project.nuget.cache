@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "eN7y3jvI43Y=",
+  "success": true,
+  "projectFilePath": "/home/mina/Documents/programing/dotnet/OpenAPISDKGenerators/src/OpenAPISDKGenerators.Backend/OpenAPISDKGenerators.Backend.csproj",
+  "expectedPackageFiles": [
+    "/home/mina/.nuget/packages/microsoft.aspnetcore.openapi/9.0.9/microsoft.aspnetcore.openapi.9.0.9.nupkg.sha512",
+    "/home/mina/.nuget/packages/microsoft.openapi/1.6.17/microsoft.openapi.1.6.17.nupkg.sha512",
+    "/home/mina/.nuget/packages/microsoft.aspnetcore.app.ref/9.0.9/microsoft.aspnetcore.app.ref.9.0.9.nupkg.sha512"
+  ],
+  "logs": []
+}

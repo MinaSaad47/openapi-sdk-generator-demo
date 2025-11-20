@@ -1,0 +1,6 @@
+@OpenAPISDKGenerators.Backend_HostAddress = http://localhost:5258
+
+GET {{OpenAPISDKGenerators.Backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
